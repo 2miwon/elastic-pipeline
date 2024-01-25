@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import copy
 
 from pdf_parser import *
+from Module import byte_json2dict
 
 load_dotenv(verbose=True)
 basic_param = {
@@ -44,11 +45,17 @@ def pdf_url_config(bookId: str, Type="1") -> str:
 def request_API_bill_info():
     # param["BILL_NO"] = str(bill_no)
     param = copy.deepcopy(basic_param)
-    param['pIndex'] = "2141"
-    param['pSize'] = "1000"
+    param['pIndex'] = "1"
+    param['pSize'] = "1"
     response = requests.get(openAPI_url_config(os.getenv('OPENAPI_SEARCH_BILL_CODE') ,param))
+    if response.status_code == 200:
+
+    else 
+        raise 
     content = response.content
-    print(content)
+    # if response.content[os.getenv('OPENAPI_SEARCH_BILL_CODE')]:
+    #     pass
+    print(byte_json2dict(response.content))
     return response.content
 
 #
