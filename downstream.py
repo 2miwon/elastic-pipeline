@@ -52,7 +52,7 @@ def request_API_bill_info():
 
     else 
         raise 
-    content = response.content
+    content = response.json()
     # if response.content[os.getenv('OPENAPI_SEARCH_BILL_CODE')]:
     #     pass
     print(byte_json2dict(response.content))
