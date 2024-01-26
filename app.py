@@ -22,5 +22,5 @@ def start_loading_file():
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(port=5000, debug=True)
+    app.run(port=80)
     start_loading_file()

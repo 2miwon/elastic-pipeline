@@ -107,15 +107,11 @@ def download_file(url: str, file_path: str, file_name: str):
         raise Exception(f"Fail to download file from {url} with status code {response.status_code}")
 
 def loading_file():
-    import time
-    timee = time.time() 
     for i in range(1, 100000):
         try:
             bill_no, bill_id = get_bill_api_data(i)
             if bill_no is None:
                 break
-            print(time.time() - timee)
-            timee = time.time()
             # if not read_bill_metadata_by_bill_no(bill_no):
             if not os.path.exists(os.path.join(os.getenv('BILL_PDF_LOCATION'), "bill_no" + ".pdf")):
                 file_link = get_bill_origin_file_link(bill_id)
