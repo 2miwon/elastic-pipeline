@@ -1,14 +1,11 @@
-import os
-from dotenv import load_dotenv
 import requests
 from bs4 import BeautifulSoup
 import copy
+
 from config import *
+from metadata import *
+# from Module import *
 
-from pdf_parser import *
-from Module import byte_json2dict
-
-load_dotenv(verbose=True)
 basic_param = {
     "KEY": os.getenv('ASSEMBLY_OPENAPI_KEY'),
     "Type": "json"
@@ -30,42 +27,25 @@ def openAPI_url_config(code: str, parameter: dict) -> str:
     url = OPENAPI_BASIC_URL + code + '?'
     for param, value in parameter.items():
         url += param + '=' + value + '&'
-    print(url)
     return url
 
 def get_bill_info_system_url(billId: str) -> str:
-    return ASSEMBLY_BILL_INFO_BASIC_URL + "billId=" + billId
+    url = ASSEMBLY_BILL_INFO_BASIC_URL + "billId=" + billId
+    return url
 
 def pdf_url_config(bookId: str, Type="1") -> str:
     """
     pdf 파일 다운로드용 url
     한글 파일은 type = 0 / pdf 파일은 type = 1
     """
-    return ASSEMBLY_PDF_BASIC_URL + "?bookId=" + bookId + "&type=" + Type
+    url = ASSEMBLY_PDF_BASIC_URL + "?bookId=" + bookId + "&type=" + Type
+    return url
 
 #
 # OpenAPI 상호작용
 #
 
-# def get_lastest_bill_num() -> str:
-#     param = copy.deepcopy(basic_param)
-#     # param['pIndex'] = "1"
-#     param['pSize'] = "1"
-#     response = requests.get(openAPI_url_config(os.getenv('OPENAPI_SEARCH_BILL_CODE') ,param))
-#     if response.status_code == 200:
-#         content_json = response.json()[os.getenv('OPENAPI_SEARCH_BILL_CODE')]
-#         return parsing_json_bill_num(content_json)
-#     else:
-#         raise("Fail to request API")
-
-# def parsing_json_bill_num(json: dict) -> str:
-#     if json[0]['head'][1]['RESULT']['CODE'] == 'INFO-000':
-#         body = json[1]['row']
-#         return body[0]['BILL_NO']
-#     else:
-#         return None
-
-def get_bill_id(pIndex: int) -> str:
+def get_bill_api_data(pIndex: int) -> str:
     param = copy.deepcopy(basic_param)
     # param["BILL_NO"] = str(bill_no)
     param['pIndex'] = str(pIndex)
@@ -73,42 +53,75 @@ def get_bill_id(pIndex: int) -> str:
     response = requests.get(openAPI_url_config(OPENAPI_SEARCH_BILL_CODE ,param))
     if response.status_code == 200:
         if OPENAPI_SEARCH_BILL_CODE not in response.json():
-            return None
+            return None, None
         
         content_json = response.json()[OPENAPI_SEARCH_BILL_CODE]
-        return parsing_json_bill_id(content_json)
+        return parsing_json(content_json)
     else:
-        raise("Fail to request API")
+        raise Exception("Fail to request API")
     
-def parsing_json_bill_id(json: dict) -> str:
+def parsing_json(json: dict) -> str:
     if json[0]['head'][1]['RESULT']['CODE'] == 'INFO-000':
         body = json[1]['row']
-        return body[0]['BILL_ID']
+        return body[0]['BILL_NO'], body[0]['BILL_ID']
     else:
         return None
 
 #
 # 의안정보시스템 웹사이트 상호작용 (BS4)
 # 
-
-def get_bill_info_system_html(billId: str) -> str:
-    response = requests.get(get_bill_info_system_url(billId))
+    
+# /html/body/div/div[2]/div[2]/div/div[3]/div[1]/table/tbody/tr/td[4]/a[2]
+def get_bill_origin_file_link(billId: str) -> str:
+    link = get_bill_info_system_url(billId)
+    response = requests.get(link)
     if response.status_code == 200:
-        return response.text
+        soup = BeautifulSoup(response.text, 'html.parser')
+        book_id = inner_book_id_parser(soup.select_one(BILL_ORIGIN_XPATH).get('href'))
+        return pdf_url_config(book_id)
     else:
-        raise("Fail to request html")
+        raise Exception(f"Fail to request {link} with status code {response.status_code}")
+
+def inner_book_id_parser(href: str) -> str:
+    param = href.split(",")[1]
+    return param.split("'")[1]
 
 def request_pdf(pdf_url: str):
     response = requests.get(pdf_url)
     pdf_content = response.content
-    print(type(pdf_content))
+    return pdf_content
 
-# request_pdf()
+def get_bill_origin_file_name(link: str) -> str:
+    return link.split("=").split("&")[0]
 
-# ','5985B17F-6EB7-94FE-3648-67511E646665','1')
+#
+# 파일 다운로드
+#
 
-# function openBillFile(baseurl, bookid, type) {
-# 	var url = baseurl+"?bookId="+escape(bookid)+"&type="+escape(type);
-# 	$("#hiddenForm").attr("action", url);
-# 	$("#hiddenForm").submit();
-# }
+def download_file(url: str, file_path: str, file_name: str):
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(os.path.join(file_path, file_name), 'wb') as f:
+            f.write(response.content)
+    else:
+        raise Exception(f"Fail to download file from {url} with status code {response.status_code}")
+
+def loading_file():
+    import time
+    timee = time.time() 
+    for i in range(1, 100000):
+        try:
+            bill_no, bill_id = get_bill_api_data(i)
+            if bill_no is None:
+                break
+            print(time.time() - timee)
+            timee = time.time()
+            # if not read_bill_metadata_by_bill_no(bill_no):
+            if not os.path.exists(os.path.join(os.getenv('BILL_PDF_LOCATION'), "bill_no" + ".pdf")):
+                file_link = get_bill_origin_file_link(bill_id)
+                file_name = bill_no + ".pdf"
+                download_file(file_link, os.getenv('BILL_PDF_LOCATION'), file_name)
+                insert_bill_metadata(bill_no, bill_id, file_link)
+                print(f"Success to download file {file_name}")
+        except Exception as e:
+            print(f"Fail to download file: {e}")
