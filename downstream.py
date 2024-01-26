@@ -77,6 +77,8 @@ def get_bill_origin_file_link(billId: str) -> str:
     response = requests.get(link)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
+        # table = soup.find('table')
+        # parsed = table.select_one(BILL_ORIGIN_TABLE_XPATH)
         parsed = soup.select_one(BILL_ORIGIN_XPATH)
         if parsed is None:
             raise Exception("There are no file")
@@ -116,7 +118,7 @@ def loading_file():
             if bill_no is None:
                 break
             # if not read_bill_metadata_by_bill_no(bill_no):
-            if not os.path.exists(os.getenv('BILL_PDF_LOCATION') + bill_no + ".pdf"):
+            if not os.path.exists(os.path.abspath(os.getenv('BILL_PDF_LOCATION')) + "/" + bill_no + ".pdf"):
                 file_link = get_bill_origin_file_link(bill_id)
                 file_name = bill_no + ".pdf"
                 download_file(file_link, os.getenv('BILL_PDF_LOCATION'), file_name)

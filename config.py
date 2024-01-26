@@ -12,6 +12,7 @@ OPENAPI_SEARCH_BILL_CODE = "TVBPMBILL11"
 #Assembly System Web
 BILL_DETAIL_CONTENTS_XPATH = "body > div > div:nth-child(3) > div:nth-child(3)"
 BILL_ORIGIN_XPATH = "body > div > div:nth-child(3) > div:nth-child(3) > div > div:nth-child(3) > div:nth-child(2) > table > tbody > tr > td:nth-child(4) > a:nth-child(2)"
+BILL_ORIGIN_TABLE_XPATH = "tbody > tr > td:nth-child(4) > a:nth-child(2)"
 
 #SQLite3
 DB_FILE_PATH = f'{os.getcwd()}/sqlite/database.db'
