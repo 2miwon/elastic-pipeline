@@ -5,3 +5,4 @@ testfile
 database.db
 test*
 nohup.out
+init_down.log

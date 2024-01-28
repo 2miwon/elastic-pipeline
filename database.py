@@ -12,7 +12,8 @@ def db_init_check():
         CREATE TABLE IF NOT EXISTS bills (
             bill_no TEXT PRIMARY KEY,
             bill_id TEXT,
-            raw_file_link TEXT
+            raw_file_link TEXT,
+            title TEXT
         )
     ''')
     insert_data_end(conn)
@@ -22,7 +23,7 @@ def insert_bill_metadata(bill_no: str, bill_id: str, raw_file_link: str, title: 
     conn.cursor().execute('''
         INSERT INTO bills (bill_no, bill_id, raw_file_link, title)
         VALUES (?, ?, ?, ?)
-    ''', (bill_no, bill_id, raw_file_link. title))
+    ''', (bill_no, bill_id, raw_file_link, title))
     insert_data_end(conn)
 
 def read_bill_metadata_by_bill_no(bill_no: str):
