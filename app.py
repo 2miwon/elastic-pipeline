@@ -1,7 +1,8 @@
-from flask import Flask
+from flask import Flask, render_template
 import threading
 from downstream import loading_file
 from metadata import *
+from raw_search import *
 
 def create_app():
     app = Flask(__name__)
@@ -12,13 +13,21 @@ def create_app():
     def onboarding():
         return read_all_bill_metadata()
     
+    @app.route('/test')
+    def test():
+        # return render_template('test.html')
+        return raw_search("sn")
+
+    @app.route('/api')
+    def fuck():
+        pass
+
     return app
 
 def start_loading_file():
-    # Start loading_file in a separate thread
-    print("Start loading_file in a separate thread")
     loading_thread = threading.Thread(target=loading_file)
     loading_thread.start() 
+    print("Start loading_file in a separate thread")
 
 if __name__ == '__main__':
     app = create_app()

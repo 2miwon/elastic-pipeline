@@ -3,3 +3,5 @@
 __pycache__
 testfile
 database.db
+test*
+nohup.out
