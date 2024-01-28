@@ -1,8 +1,6 @@
 import requests
 from .raw_search import *
-from .url_config import *
 from .open_api import *
-
 
 from config import *
 from metadata import *

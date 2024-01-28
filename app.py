@@ -27,6 +27,7 @@ def create_app():
 def start_loading_file():
     loading_thread = threading.Thread(target=loading_file)
     loading_thread.start() 
+
     print("Start loading_file in a separate thread")
 
 if __name__ == '__main__':

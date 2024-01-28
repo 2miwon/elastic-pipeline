@@ -1,6 +1,7 @@
-def byte_json2dict(byte_str: bytes) -> dict:
-    from ast import literal_eval
-    return literal_eval(byte_str.decode('utf-8'))
+def byte_json2dict(byte: bytes) -> dict:
+    import json
+    json_string = byte.decode('utf-8').strip()
+    data = json.loads(json_string)
 
 def download_file(url: str, directory: str, filename: str):
     import requests

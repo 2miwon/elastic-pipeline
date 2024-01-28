@@ -1,5 +1,6 @@
 import requests
 import json
+from bs4 import BeautifulSoup
 
 def raw_search(query: str):
     url = 'https://likms.assembly.go.kr/nsrch/search.do'
@@ -14,8 +15,12 @@ def raw_search(query: str):
     response = requests.post(url, data=data)
     return response.content
 
-def parse_serach(byte_html: bytes):
-    pass
+def parse_search(byte_html: bytes):
+    soup = BeautifulSoup(byte_html, 'html.parser')
+    print(soup)
+    # results = [item for result in data['result'] for item in result['items']]
+
+    # return results
 
 def raw_keword(query: str):
     url = 'https://likms.assembly.go.kr/nsrch/ark/ark_trans.do'
@@ -30,17 +35,15 @@ def raw_keword(query: str):
     return response.content
 
 def parse_keword(byte_string: bytes):
-    # 바이트 문자열을 문자열로 디코딩하고 JSON을 파싱
     json_string = byte_string.decode('utf-8').strip()
     data = json.loads(json_string)
-
-    # Keyword 추출
-    keywords = [item['keyword'] for result in data['result'] for item in result['items']]
-
+    keywords = [item['keyword'] for result in data['result'] if result['totalcount'] for item in result['items']]
     return keywords
 
 def get_keword(query: str) -> list:
     return parse_keword(raw_keword(query))
 
-print(get_keword("sns"))
-print(type(raw_search("sns")))
+def get_search(query: str) -> list:
+    return parse_search(raw_search(query))
+
+print(get_search('sn'))
