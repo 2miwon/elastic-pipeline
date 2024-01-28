@@ -53,5 +53,3 @@ def get_keword(query: str) -> list:
 
 def get_search(query: str) -> list:
     return parse_search(raw_search(query))
-
-print(get_search('sn'))
