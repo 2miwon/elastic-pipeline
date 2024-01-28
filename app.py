@@ -16,7 +16,7 @@ def create_app():
     @app.route('/test')
     def test():
         # return render_template('test.html')
-        return raw_search("sn")
+        return get_keword("sns")
 
     @app.route('/api')
     def fuck():

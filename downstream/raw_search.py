@@ -30,6 +30,9 @@ def parse_search(byte_html: bytes):
     ]
     return results
 
+def get_search(query: str) -> list:
+    return parse_search(raw_search(query))
+
 def raw_keword(query: str):
     url = 'https://likms.assembly.go.kr/nsrch/ark/ark_trans.do'
     data = {
@@ -51,5 +54,3 @@ def parse_keword(byte_string: bytes):
 def get_keword(query: str) -> list:
     return parse_keword(raw_keword(query))
 
-def get_search(query: str) -> list:
-    return parse_search(raw_search(query))
