@@ -61,7 +61,7 @@ def download_file(url: str, file_path: str, file_name: str):
 def loading_file():
     for i in range(1, 100000):
         try:
-            bill_no, bill_id = get_bill_api_data(i)
+            bill_no, bill_id, title = get_bill_api_data(i)
             if bill_no is None:
                 break
             # if not read_bill_metadata_by_bill_no(bill_no):
@@ -69,7 +69,7 @@ def loading_file():
                 file_link = get_bill_origin_file_link(bill_id)
                 file_name = bill_no + ".pdf"
                 download_file(file_link, os.getenv('BILL_PDF_LOCATION'), file_name)
-                insert_bill_metadata(bill_no, bill_id, file_link)
+                insert_bill_metadata(bill_no, bill_id, file_link, title)
                 print(f"Success to download file {file_name}")
         except Exception as e:
             print(f"Fail to download file: {e}")

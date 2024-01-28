@@ -2,7 +2,11 @@ from flask import Flask, render_template
 import threading
 from downstream.download import *
 from downstream.raw_search import *
-from metadata import *
+from database import *
+
+"""
+for Flask
+"""
 
 def create_app():
     app = Flask(__name__)

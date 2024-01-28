@@ -17,12 +17,12 @@ def db_init_check():
     ''')
     insert_data_end(conn)
 
-def insert_bill_metadata(bill_no: str, bill_id: str, raw_file_link: str):
+def insert_bill_metadata(bill_no: str, bill_id: str, raw_file_link: str, title: str):
     conn = get_db_connection(DB_FILE_PATH)
     conn.cursor().execute('''
-        INSERT INTO bills (bill_no, bill_id, raw_file_link)
-        VALUES (?, ?, ?)
-    ''', (bill_no, bill_id, raw_file_link))
+        INSERT INTO bills (bill_no, bill_id, raw_file_link, title)
+        VALUES (?, ?, ?, ?)
+    ''', (bill_no, bill_id, raw_file_link. title))
     insert_data_end(conn)
 
 def read_bill_metadata_by_bill_no(bill_no: str):

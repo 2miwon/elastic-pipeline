@@ -26,7 +26,7 @@ def get_bill_api_data(pIndex: int) -> str:
     response = requests.get(openAPI_url_config(OPENAPI_SEARCH_BILL_CODE ,param))
     if response.status_code == 200:
         if OPENAPI_SEARCH_BILL_CODE not in response.json():
-            return None, None
+            return None, None, None
         
         content_json = response.json()[OPENAPI_SEARCH_BILL_CODE]
         return parsing_json(content_json)
@@ -36,6 +36,6 @@ def get_bill_api_data(pIndex: int) -> str:
 def parsing_json(json: dict) -> str:
     if json[0]['head'][1]['RESULT']['CODE'] == 'INFO-000':
         body = json[1]['row']
-        return body[0]['BILL_NO'], body[0]['BILL_ID']
+        return body[0]['BILL_NO'], body[0]['BILL_ID'], body[0]['BILL_NAME']
     else:
         return None
