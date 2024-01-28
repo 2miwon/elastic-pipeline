@@ -73,3 +73,6 @@ def loading_file():
                 print(f"Success to download file {file_name}")
         except Exception as e:
             print(f"Fail to download file: {e}")
+
+if __name__ == "__main__":
+    loading_file()

@@ -49,7 +49,7 @@ def parse_keword(byte_string: bytes):
     json_string = byte_string.decode('utf-8').strip()
     data = json.loads(json_string)
     keywords = [item['keyword'] for result in data['result'] if result['totalcount'] for item in result['items']]
-    return keywords
+    return ','.join(keywords)
 
 def get_keword(query: str) -> list:
     return parse_keword(raw_keword(query))
