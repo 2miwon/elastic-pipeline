@@ -1,8 +1,8 @@
 from flask import Flask, render_template
 import threading
-from downstream import loading_file
+from downstream.download import *
+from downstream.raw_search import *
 from metadata import *
-from raw_search import *
 
 def create_app():
     app = Flask(__name__)
