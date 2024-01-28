@@ -1,6 +1,7 @@
 import requests
 import json
 from bs4 import BeautifulSoup
+from config import *
 
 def raw_search(query: str):
     url = 'https://likms.assembly.go.kr/nsrch/search.do'
@@ -15,12 +16,19 @@ def raw_search(query: str):
     response = requests.post(url, data=data)
     return response.content
 
+# /html/body/form/div/div[2]/div[2]/div[2]/div[1]
 def parse_search(byte_html: bytes):
     soup = BeautifulSoup(byte_html, 'html.parser')
-    print(soup)
     # results = [item for result in data['result'] for item in result['items']]
-
-    # return results
+    chunk = soup.select_one(RAW_SERACH_BILL_XPATH)
+    results = [ 
+        {
+            "href": li.a["href"],
+            "text": li.a.text.strip()
+        } 
+        for li in chunk.find_all("li")
+    ]
+    return results
 
 def raw_keword(query: str):
     url = 'https://likms.assembly.go.kr/nsrch/ark/ark_trans.do'
