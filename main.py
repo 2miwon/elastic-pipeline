@@ -18,6 +18,14 @@ app = FastAPI()
 def read_all_bill_metadata():
     return read_all_bill_metadata()
 
+@app.get("/raw_search/{query}")
+def raw_search(query: str):
+    return get_search(query)
+
+@app.get("/recommend_keword/{query}")
+def recommend_keword(query: str):
+    return get_keword(query)
+
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}

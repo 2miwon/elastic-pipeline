@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from .open_api import *
 from config import *
+from database import *
 
 def get_bill_info_system_url(billId: str) -> str:
     url = ASSEMBLY_BILL_INFO_BASIC_URL + "billId=" + billId
