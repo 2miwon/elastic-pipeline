@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base # Base 생성
 from config import *
+import datetime
 
 # class engineconn:
 
@@ -17,7 +18,7 @@ from config import *
 #         conn = self.engine.connect()
 #         return conn
 
-engine = create_engine(os.getenv('RDS_DATABASE_URL'),connect_args={"check_same_thread": False})
+engine = create_engine(os.getenv('RDS_DATABASE_URL'))
 SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine)
 Base = declarative_base()
 
@@ -36,7 +37,7 @@ class Bills(Base):
     __tablename__ = "bills"
 
     bill_no = Column(Integer, primary_key=True)
-    bill_id = Column(String(255), nullable=False)
+    bill_id = Column(Text, nullable=False)
     title = Column(Text, nullable=False)
     file_link = Column(Text, nullable=False)
 
@@ -49,12 +50,22 @@ class Bills(Base):
     # resulted_at = Column(DateTime, nullable=True)
     # deleted_at = Column(DateTime, nullable=True)
 
-insert_bill_metadata(bill_no, bill_id, file_link, title):
-    db = get_db_session()
-    db.add(
-        Bills()
-    ) 
+def insert_bill_metadata(bill_no, bill_id, file_link, title):
+    with SessionLocal() as db:
+        db.add(
+            Bills(
+	    		bill_no = bill_no, 
+	    	    bill_id = bill_id, 
+	    	    file_link = file_link, 
+	    	    title = title, 
+	    	    created_at=datetime.datetime.now(), 
+	    	    updated_at=datetime.datetime.now()
+            )
+        ) 
+        db.commit()
 
+if __name__ == "__main__":
+	insert_bill_metadata(1, "pdsf", "1", "1")
 # class MainCategory:
 #     __tablename__ = "main_category"
 

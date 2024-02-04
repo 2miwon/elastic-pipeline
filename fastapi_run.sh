@@ -1,1 +1,1 @@
-nohup uvicorn main:app --host=0.0.0.0 --port=80&
+nohup uvicorn main:app --host=0.0.0.0 --reload &

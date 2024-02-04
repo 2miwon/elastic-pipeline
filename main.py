@@ -34,15 +34,11 @@ def keword(query: str):
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
 
-@app.get("/pdf_link/{bill_no}")
-def keword(query: str):
-    return get_keword(query)
-
 @app.on_event('startup')
 def init_data():
     print("hello!")
-    db_init_check()
-    loading_file()
+    # db_init_check()
+    # loading_file()
 #     scheduler = BackgroundScheduler()
 #     scheduler.add_job(check_list_len, 'cron', second='*/5')
 #     scheduler.start()
