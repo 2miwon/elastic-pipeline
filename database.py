@@ -1,47 +1,58 @@
-import sqlite3
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base # Base 생성
 from config import *
-from module import *
 
-def insert_data_end(connect: sqlite3.Connection):
-    connect.commit()
-    connect.close()
+# class engineconn:
 
-def db_init_check():
-    conn = get_db_connection(DB_FILE_PATH)
-    conn.cursor().execute('''
-        CREATE TABLE IF NOT EXISTS bills (
-            bill_no TEXT PRIMARY KEY,
-            bill_id TEXT,
-            raw_file_link TEXT,
-            title TEXT
-        )
-    ''')
-    insert_data_end(conn)
+#     def __init__(self):
+#         self.engine = create_engine(DB_URL, pool_recycle = 500)
 
-def insert_bill_metadata(bill_no: str, bill_id: str, raw_file_link: str, title: str):
-    conn = get_db_connection(DB_FILE_PATH)
-    conn.cursor().execute('''
-        INSERT INTO bills (bill_no, bill_id, raw_file_link, title)
-        VALUES (?, ?, ?, ?)
-    ''', (bill_no, bill_id, raw_file_link, title))
-    insert_data_end(conn)
+#     def sessionmaker(self):
+#         Session = sessionmaker(bind=self.engine)
+#         session = Session()
+#         return session
 
-def read_bill_metadata_by_bill_no(bill_no: str):
-    conn = get_db_connection(DB_FILE_PATH)
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT * FROM bills WHERE bill_no = ?
-    ''', (bill_no,))
-    row = cursor.fetchone()
-    conn.close()
-    return row
+#     def connection(self):
+#         conn = self.engine.connect()
+#         return conn
 
-def read_all_bill_metadata():
-    conn = get_db_connection(DB_FILE_PATH)
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT * FROM bills
-    ''')
-    rows = cursor.fetchall()
-    conn.close()
-    return rows 
+engine = create_engine(os.getenv('RDS_DATABASE_URL'),connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine)
+Base = declarative_base()
+
+def get_db_session():
+	db = SessionLocal()
+	try:
+		yield db # DB 연결 성공한 경우, DB 세션 시작
+	finally:
+		db.close()
+		# db 세션이 시작된 후, API 호출이 마무리되면 DB 세션을 닫아준다.
+
+from sqlalchemy import Column, Integer, String, Text, DateTime
+from sqlalchemy.orm import relationship
+
+class Bills(Base):
+    __tablename__ = "bills"
+
+    bill_no = Column(Integer, primary_key=True)
+    bill_id = Column(String, nullable=False)
+    title = Column(Text, nullable=False)
+    file_link = Column(Text, nullable=False)
+
+    # status
+    # main_category_id
+    # main_category = relationship("MainCategory", backref="")
+    # council_name = Column(String, nullable=True)
+    created_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=False)
+    # resulted_at = Column(DateTime, nullable=True)
+    # deleted_at = Column(DateTime, nullable=True)
+
+# class MainCategory:
+#     __tablename__ = "main_category"
+
+#     id = Column(Integer, primary_key=True)
+#     council_name Column(String, nullable=True)
+#     name = Column(String, nullable=True)
+
