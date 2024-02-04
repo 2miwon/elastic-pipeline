@@ -17,9 +17,9 @@ from config import *
 #         conn = self.engine.connect()
 #         return conn
 
-# engine = create_engine(os.getenv('RDS_DATABASE_URL'),connect_args={"check_same_thread": False})
-# SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine)
-# Base = declarative_base()
+engine = create_engine(os.getenv('RDS_DATABASE_URL'),connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine)
+Base = declarative_base()
 
 def get_db_session():
 	db = SessionLocal()
@@ -32,22 +32,28 @@ def get_db_session():
 from sqlalchemy import Column, Integer, String, Text, DateTime
 from sqlalchemy.orm import relationship
 
-# class Bills(Base):
-#     __tablename__ = "bills"
+class Bills(Base):
+    __tablename__ = "bills"
 
-#     bill_no = Column(Integer, primary_key=True)
-#     bill_id = Column(String, nullable=False)
-#     title = Column(Text, nullable=False)
-#     file_link = Column(Text, nullable=False)
+    bill_no = Column(Integer, primary_key=True)
+    bill_id = Column(String(255), nullable=False)
+    title = Column(Text, nullable=False)
+    file_link = Column(Text, nullable=False)
 
-#     # status
-#     # main_category_id
-#     # main_category = relationship("MainCategory", backref="")
-#     # council_name = Column(String, nullable=True)
-#     created_at = Column(DateTime, nullable=False)
-#     updated_at = Column(DateTime, nullable=False)
+    # status
+    # main_category_id
+    # main_category = relationship("MainCategory", backref="")
+    # council_name = Column(String, nullable=True)
+    created_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=False)
     # resulted_at = Column(DateTime, nullable=True)
     # deleted_at = Column(DateTime, nullable=True)
+
+insert_bill_metadata(bill_no, bill_id, file_link, title):
+    db = get_db_session()
+    db.add(
+        Bills()
+    ) 
 
 # class MainCategory:
 #     __tablename__ = "main_category"

@@ -6,3 +6,4 @@ database.db
 test*
 nohup.out
 init_down.log
+alembic.ini
