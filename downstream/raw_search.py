@@ -29,18 +29,63 @@ def parse_search(byte_html: bytes):
     chunk = soup.find(class_="sectionList")
     data = [ 
         {
-            "title": li.a.text.strip(),
-            "href": li.a["href"],
-            "content": li.div.text.strip()
+            "_title": li.a.text.strip(),
+            "_href": li.a["href"],
+            "_source": li.div.text.strip()
         } 
         for li in chunk.find_all("li")
     ]
     result = {
-        "count": count.text,
+        "hits": {
+            # "took": 3,
+            "total": {
+                "value": int(count.text),
+                # "relation": "eq"
+            },
+            "hits": data
+        }
     }
     for i in range(len(data)):
         result[i] = data[i]  
     return result
+
+# {
+#   "took" : 3,
+#   "timed_out" : false,
+#   "_shards" : {
+#     "total" : 1,
+#     "successful" : 1,
+#     "skipped" : 0,
+#     "failed" : 0
+#   },
+#   "hits" : {
+#     "total" : {
+#       "value" : 2,
+#       "relation" : "eq"
+#     },
+#     "max_score" : 0.105360515,
+#     "hits" : [
+#       {
+#         "_index" : "test",
+#         "_type" : "_doc",
+#         "_id" : "3",
+#         "_score" : 0.105360515,
+#         "_source" : {
+#           "field" : "value three"
+#         }
+#       },
+#       {
+#         "_index" : "test",
+#         "_type" : "_doc",
+#         "_id" : "1",
+#         "_score" : 0.105360515,
+#         "_source" : {
+#           "field" : "value two"
+#         }
+#       }
+#     ]
+#   }
+# }
 
 def get_search(query: str) -> list:
     # return parse_search(raw_search(query))
