@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import threading
 from downstream.download import *
 from downstream.raw_search import *
@@ -22,7 +22,9 @@ def create_app():
 
     @app.get("/search/<query>")
     def search(query: str):
-        return get_search(query)
+        page = request.args.get('page', 0)
+        sort = request.args.get('sort', "RANK")
+        return get_search(query, page=int(page), sort=sort)
 
     @app.get("/keword/<query>")
     def keword(query: str):

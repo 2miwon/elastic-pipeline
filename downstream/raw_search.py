@@ -18,7 +18,6 @@ def raw_search(query: str, page:int = 0, sort:str ="RANK", searchField:str = "AL
         'realQuery': query,
         'query': query,
     }
-    
     response = requests.post(url, data=data)
     return response.content
 
@@ -27,26 +26,42 @@ def parse_search(byte_html: bytes):
     # results = [item for result in data['result'] for item in result['items']]
     count = soup.find("p", class_="sectionResult").find("span")
     chunk = soup.find(class_="sectionList")
-    data = [ 
+    print(chunk)
+    # data = [ 
+    #     {
+    #         "_title": li.a.text.strip(),
+    #         "_href": li.a["href"],
+    #         "_source": li.div.text.strip()
+    #     } 
+    #     for li in chunk.find_all("li")
+    # ]
+    # result = {
+    #     "hits": {
+    #         # "took": 3,
+    #         "total": {
+    #             "value": int(count.text.replace(',', '')),
+    #             # "relation": "eq"
+    #         },
+    #         "hits": data
+    #     }
+    # }
+    # for i in range(len(data)):
+    #     result[i] = data[i]  
+    data = [
         {
-            "_title": li.a.text.strip(),
-            "_href": li.a["href"],
-            "_source": li.div.text.strip()
-        } 
-        for li in chunk.find_all("li")
-    ]
-    result = {
-        "hits": {
-            # "took": 3,
-            "total": {
-                "value": int(count.text),
-                # "relation": "eq"
-            },
-            "hits": data
+            "title": div[0][2:].strip(),
+            "speaker": div2[0],
+            "bill_no": div2[1],
+            "date": div2[2]
         }
-    }
-    for i in range(len(data)):
-        result[i] = data[i]  
+        for li in chunk.find_all("li")
+        for div in [li.a.text.strip()[:-2].split(' [ ')]
+        for div2 in [div[1].split(', ')]
+    ] 
+    result = {
+        "total": int(count.text.replace(',', '')),
+        "data": data
+    } 
     return result
 
 # {
@@ -87,10 +102,10 @@ def parse_search(byte_html: bytes):
 #   }
 # }
 
-def get_search(query: str) -> list:
+def get_search(query: str, page: str, sort: str) -> list:
     # return parse_search(raw_search(query))
     # return json.loads(raw_search(query))
-    return json.dumps(parse_search(raw_search(query)))
+    return json.dumps(parse_search(raw_search(query, page, sort)))
 
 def raw_keword(query: str):
     url = 'https://likms.assembly.go.kr/nsrch/ark/ark_trans.do'
