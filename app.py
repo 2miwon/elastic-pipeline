@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
+from flask_cors import CORS
 import threading
 from downstream.download import *
 from downstream.raw_search import *
@@ -10,6 +11,7 @@ for Flask
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
 
     @app.route('/')
     def onboarding():
@@ -30,6 +32,12 @@ def create_app():
     def keword(query: str):
         return get_keword(query)
 
+    @app.get('/file/<bill_id>')
+    def get_file(bill_id:int):
+        print(bill_id)
+        filepath = f'/data/bills/{int(bill_id)}.pdf'
+        return send_file(filepath, as_attachment=True)
+    
     return app
 
 def start_loading_file():

@@ -26,7 +26,6 @@ def parse_search(byte_html: bytes):
     # results = [item for result in data['result'] for item in result['items']]
     count = soup.find("p", class_="sectionResult").find("span")
     chunk = soup.find(class_="sectionList")
-    print(chunk)
     # data = [ 
     #     {
     #         "_title": li.a.text.strip(),
@@ -52,7 +51,8 @@ def parse_search(byte_html: bytes):
             "title": div[0][2:].strip(),
             "speaker": div2[0],
             "bill_no": div2[1],
-            "date": div2[2]
+            "date": div2[2],
+            "contents": li.div.text.strip()
         }
         for li in chunk.find_all("li")
         for div in [li.a.text.strip()[:-2].split(' [ ')]
@@ -60,7 +60,7 @@ def parse_search(byte_html: bytes):
     ] 
     result = {
         "total": int(count.text.replace(',', '')),
-        "data": data
+        "result": data
     } 
     return result
 
