@@ -1,8 +1,9 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, Column, ForeignKey, Integer, String, Text, DateTime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base # Base 생성
 from config import *
 import datetime
+from enum import Enum
 
 # class engineconn:
 
@@ -40,7 +41,8 @@ class Bills(Base):
     bill_id = Column(Text, nullable=False)
     title = Column(Text, nullable=False)
     file_link = Column(Text, nullable=False)
-
+    proposer = Column(Text, nullable=False)
+    date = Column(Text, nullable=False)
     # status
     # main_category_id
     # main_category = relationship("MainCategory", backref="")
@@ -50,13 +52,88 @@ class Bills(Base):
     # resulted_at = Column(DateTime, nullable=True)
     # deleted_at = Column(DateTime, nullable=True)
 
-def insert_bill_metadata(bill_no, bill_id, file_link, title):
+class Email(Base):
+    __tablename__ = 'email'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    receiver_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    receiver = relationship("User", back_populates="emails")
+    subject = Column(String, nullable=False)
+    message_body = Column(String, nullable=False)
+
+    def __init__(self, receiver, subject, message_body):
+        self.receiver = receiver
+        self.subject = subject
+        self.message_body = message_body
+
+class Keyword(Base):
+    __tablename__ = 'keyword'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    value = Column(String, nullable=False, unique=True)
+    subscriptions = relationship("Subscription", back_populates="keyword", cascade="all, delete-orphan")
+
+    def __init__(self, value):
+        self.value = value
+
+class Role(Enum):
+    GUEST = "ROLE_GUEST", "손님"
+    USER = "ROLE_USER", "일반 사용자"
+
+    def __new__(cls, key, title):
+        obj = object.__new__(cls)
+        obj._value_ = key
+        obj.key = key
+        obj.title = title
+        return obj
+
+class Subscription(Base):
+    __tablename__ = 'subscription'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    keyword_id = Column(Integer, ForeignKey('keyword.id'), nullable=False)
+    user = relationship("User", back_populates="subscriptions")
+    keyword = relationship("Keyword", back_populates="subscriptions")
+
+    def __init__(self, user, keyword):
+        self.user = user
+        self.keyword = keyword
+
+class User(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    picture = Column(String)
+    role = Column(Enum('ROLE_GUEST', 'ROLE_USER', name='role_enum'), nullable=False)
+    subscriptions = relationship("Subscription", back_populates="user", cascade="all, delete-orphan")
+
+    def __init__(self, name, email, picture, role, subscriptions=None):
+        self.name = name
+        self.email = email
+        self.picture = picture
+        self.role = role
+        self.subscriptions = subscriptions if subscriptions is not None else []
+
+    def update(self, name, picture):
+        self.name = name
+        self.picture = picture
+        return self
+
+    def get_role_key(self):
+        return self.role
+
+def insert_bill_metadata(bill_no, bill_id, date, proposer, file_link, title):
     with SessionLocal() as db:
         db.add(
             Bills(
 	    		bill_no = bill_no, 
 	    	    bill_id = bill_id, 
 	    	    file_link = file_link, 
+				proposer = proposer,
+				date = date,
 	    	    title = title, 
 	    	    created_at=datetime.datetime.now(), 
 	    	    updated_at=datetime.datetime.now()

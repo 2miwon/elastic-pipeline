@@ -36,7 +36,6 @@ def read_item(item_id: int, q: Union[str, None] = None):
 
 @app.on_event('startup')
 def init_data():
-    print("hello!")
     loading_file()
 #     scheduler = BackgroundScheduler()
 #     scheduler.add_job(check_list_len, 'cron', second='*/5')
