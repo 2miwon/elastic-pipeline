@@ -63,16 +63,22 @@ def download_file(url: str, file_path: str, file_name: str):
 def loading_file():
     for i in range(1, 100000):
         try:
-            bill_no, bill_id, title = get_bill_api_data(i)
+            data = get_bill_api_data(i)
+            bill_no = data['BILL_NO']
+            bill_id = data['BILL_ID']
+            title = data['BILL_NAME']
+            proposal = data['PROPOSER']
+            date = data['PROPOSE_DT']
             if bill_no is None:
                 break
-            # if not read_bill_metadata_by_bill_no(bill_no):
-            if not os.path.exists(os.path.abspath(os.getenv('BILL_PDF_LOCATION')) + "/" + bill_no + ".pdf"):
+            if not exist_bill_metadata(bill_no):
+            # if not os.path.exists(os.path.abspath(os.getenv('BILL_PDF_LOCATION')) + "/" + bill_no + ".pdf"):
                 file_link = get_bill_origin_file_link(bill_id)
-                file_name = bill_no + ".pdf"
-                download_file(file_link, os.getenv('BILL_PDF_LOCATION'), file_name)
-                insert_bill_metadata(bill_no, bill_id, file_link, title)
-                print(f"Success to download file {file_name}")
+                # file_name = bill_no + ".pdf"
+                # download_file(file_link, os.getenv('BILL_PDF_LOCATION'), file_name)
+                insert_bill_metadata(bill_no=bill_no, bill_id=bill_id, date=date, proposer=proposal, title=title, file_link=file_link)
+                # print(f"Success to download file {file_name}")
+                print(f"Success to insert data {bill_no}")
         except Exception as e:
             print(f"Fail to download file: {e}")
 

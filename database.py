@@ -52,80 +52,73 @@ class Bills(Base):
     # resulted_at = Column(DateTime, nullable=True)
     # deleted_at = Column(DateTime, nullable=True)
 
-class Email(Base):
-    __tablename__ = 'email'
+# class Email(Base):
+#     __tablename__ = 'email'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    receiver_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    receiver = relationship("User", back_populates="emails")
-    subject = Column(String, nullable=False)
-    message_body = Column(String, nullable=False)
+#     id = Column(Integer, primary_key=True, autoincrement=True)
+#     receiver_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+#     receiver = relationship("User", back_populates="emails")
+#     subject = Column(String, nullable=False)
+#     message_body = Column(String, nullable=False)
 
-    def __init__(self, receiver, subject, message_body):
-        self.receiver = receiver
-        self.subject = subject
-        self.message_body = message_body
+#     def __init__(self, receiver, subject, message_body):
+#         self.receiver = receiver
+#         self.subject = subject
+#         self.message_body = message_body
 
-class Keyword(Base):
-    __tablename__ = 'keyword'
+# class Keyword(Base):
+#     __tablename__ = 'keyword'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    value = Column(String, nullable=False, unique=True)
-    subscriptions = relationship("Subscription", back_populates="keyword", cascade="all, delete-orphan")
+#     id = Column(Integer, primary_key=True, autoincrement=True)
+#     value = Column(String, nullable=False, unique=True)
+#     subscriptions = relationship("Subscription", back_populates="keyword", cascade="all, delete-orphan")
 
-    def __init__(self, value):
-        self.value = value
+#     def __init__(self, value):
+#         self.value = value
 
-class Role(Enum):
-    GUEST = "ROLE_GUEST", "손님"
-    USER = "ROLE_USER", "일반 사용자"
+# class Role(Enum):
+#     GUEST = "ROLE_GUEST"
+#     USER = "ROLE_USER"
 
-    def __new__(cls, key, title):
-        obj = object.__new__(cls)
-        obj._value_ = key
-        obj.key = key
-        obj.title = title
-        return obj
+# class Subscription(Base):
+#     __tablename__ = 'subscription'
 
-class Subscription(Base):
-    __tablename__ = 'subscription'
+#     id = Column(Integer, primary_key=True, autoincrement=True)
+#     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+#     keyword_id = Column(Integer, ForeignKey('keyword.id'), nullable=False)
+#     user = relationship("User", back_populates="subscriptions")
+#     keyword = relationship("Keyword", back_populates="subscriptions")
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    keyword_id = Column(Integer, ForeignKey('keyword.id'), nullable=False)
-    user = relationship("User", back_populates="subscriptions")
-    keyword = relationship("Keyword", back_populates="subscriptions")
+#     def __init__(self, user, keyword):
+#         self.user = user
+#         self.keyword = keyword
 
-    def __init__(self, user, keyword):
-        self.user = user
-        self.keyword = keyword
+# class User(Base):
+#     __tablename__ = 'user'
 
-class User(Base):
-    __tablename__ = 'user'
+#     id = Column(Integer, primary_key=True, autoincrement=True)
+#     name = Column(String, nullable=False)
+#     email = Column(String, nullable=False)
+#     picture = Column(String)
+#     role = Column(String, nullable=False)
+#     subscriptions = relationship("Subscription", back_populates="user", cascade="all, delete-orphan")
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
-    email = Column(String, nullable=False)
-    picture = Column(String)
-    role = Column(Enum('ROLE_GUEST', 'ROLE_USER', name='role_enum'), nullable=False)
-    subscriptions = relationship("Subscription", back_populates="user", cascade="all, delete-orphan")
+#     def __init__(self, name, email, picture, role, subscriptions=None):
+#         self.name = name
+#         self.email = email
+#         self.picture = picture
+#         self.role = role
+#         self.subscriptions = subscriptions if subscriptions is not None else []
 
-    def __init__(self, name, email, picture, role, subscriptions=None):
-        self.name = name
-        self.email = email
-        self.picture = picture
-        self.role = role
-        self.subscriptions = subscriptions if subscriptions is not None else []
+#     def update(self, name, picture):
+#         self.name = name
+#         self.picture = picture
+#         return self
 
-    def update(self, name, picture):
-        self.name = name
-        self.picture = picture
-        return self
+#     def get_role_key(self):
+#         return self.role
 
-    def get_role_key(self):
-        return self.role
-
-def insert_bill_metadata(bill_no, bill_id, date, proposer, file_link, title):
+def insert_bill_metadata(bill_no, bill_id, date, proposer, title, file_link, ):
     with SessionLocal() as db:
         db.add(
             Bills(
@@ -140,6 +133,10 @@ def insert_bill_metadata(bill_no, bill_id, date, proposer, file_link, title):
             )
         ) 
         db.commit()
+
+def exist_bill_metadata(bill_no) -> bool:
+    with SessionLocal() as db:
+        return db.query(Bills).filter(Bills.bill_no == bill_no).first() is not None
 
 if __name__ == "__main__":
 	insert_bill_metadata(1, "pdsf", "1", "1")

@@ -30,9 +30,9 @@ def search(query: str):
 def keword(query: str):
     return get_keword(query)
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/file/{bill_id}")
+def get_file(bill_id:int):
+    return get_file(bill_id)
 
 @app.on_event('startup')
 def init_data():
