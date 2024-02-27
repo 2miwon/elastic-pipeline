@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, send_file
 from flask_cors import CORS
 import threading
 from downstream.download import *
-from downstream.raw_search import *
+from downstream.search import *
 from database import *
 
 """
@@ -19,8 +19,11 @@ def create_app():
     
     @app.route('/test')
     def test():
-        # return render_template('test.html')
-        return get_keword("sns")
+        return elastic_search("sns")
+    
+    @app.route('/debug/<query>')
+    def debug(query):
+        return elastic_search(query, page=0, sort="RANK")
 
     @app.get("/search/<query>")
     def search(query: str):
@@ -34,7 +37,6 @@ def create_app():
 
     @app.get('/file/<bill_id>')
     def get_file(bill_id:int):
-        print(bill_id)
         filepath = f'/data/bills/{int(bill_id)}.pdf'
         return send_file(filepath, as_attachment=True)
     

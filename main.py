@@ -2,7 +2,7 @@ from typing import Union
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from downstream.download import *
-from downstream.raw_search import *
+from downstream.search import *
 from database import *
 
 """

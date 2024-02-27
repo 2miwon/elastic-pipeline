@@ -61,7 +61,8 @@ def download_file(url: str, file_path: str, file_name: str):
         raise Exception(f"Fail to download file from {url} with status code {response.status_code}")
 
 def loading_file():
-    for i in range(1, 100000):
+    print("loading file . . .")
+    for i in range(4030, 100000):
         try:
             data = get_bill_api_data(i)
             bill_no = data['BILL_NO']
