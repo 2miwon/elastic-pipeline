@@ -20,8 +20,8 @@ app = FastAPI()
 # )
 
 @app.get("/")
-def read_all_bill_metadata():
-    return read_all_bill_metadata()
+def health_check():
+    return "server is OK"
 
 class SearchRequest(BaseModel):
     query: str
