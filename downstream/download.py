@@ -62,7 +62,7 @@ def download_file(url: str, file_path: str, file_name: str):
 
 def loading_file():
     print("loading file . . .")
-    for i in range(4030, 100000):
+    for i in range(51795, 100000):
         try:
             data = get_bill_api_data(i)
             bill_no = data['BILL_NO']

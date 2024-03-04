@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse
 from downstream.download import *
 from downstream.search import *
 from database import *
+from pydantic import BaseModel
 
 """
 fastAPI
@@ -22,9 +23,16 @@ app = FastAPI()
 def read_all_bill_metadata():
     return read_all_bill_metadata()
 
-@app.get("/search/{query}")
-def search(query: str):
-    return get_search(query)
+class SearchRequest(BaseModel):
+    query: str
+    page: int
+    sort: str
+
+@app.post("/search/")
+def search(request: SearchRequest):
+    page = request.page or 1
+    sort = request.sort or "RANK"
+    return get_search(request.query, page, sort)
 
 @app.get("/keword/{query}")
 def keword(query: str):

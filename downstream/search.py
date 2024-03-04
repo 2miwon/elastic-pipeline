@@ -61,7 +61,7 @@ def elastic_search(query: str, page: int, sort:str) -> list:
     response = requests.post(url, headers=headers, json=data, auth=auth)
     return response.json()
 
-def get_search(query: str, page: int, sort: str) -> list:
+def get_search(query: str, page: int, sort: str) -> dict:
 
     # return parse_search(raw_search(query))
     # return json.loads(raw_search(query))
