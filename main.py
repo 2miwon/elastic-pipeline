@@ -44,7 +44,8 @@ def get_file(bill_id:int):
 
 @app.on_event('startup')
 def init_data():
-    loading_file()
+    pass
+    # loading_file()
 #     scheduler = BackgroundScheduler()
 #     scheduler.add_job(check_list_len, 'cron', second='*/5')
 #     scheduler.start()
