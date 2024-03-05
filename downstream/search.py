@@ -22,22 +22,26 @@ def raw_search(query: str, page:int = 0, sort:str ="RANK", searchField:str = "AL
     return response.content
 
 def parse_search(data: dict):
-    hits = data['hits']['hits']
-    refine = [
-        {
-            "title": hit['_source']['title'],
-            "speaker": hit['_source']['speaker'],
-            "bill_no": hit['_source']['bill_no'],
-            "date": hit['_source']['date'],
-            # "contents": hit['_source']['content'],
-        }
-        for hit in hits
-    ] 
-    result = {
-        "total": int(data['hits']['total']['value']),
-        "result": refine
-    } 
-    return result
+    try:
+        print(data)
+        hits = data['hits']['hits']
+        refine = [
+            {
+                "title": hit['_source']['title'],
+                "speaker": hit['_source']['speaker'],
+                "bill_no": hit['_source']['bill_no'],
+                "date": hit['_source']['date'],
+                # "contents": hit['_source']['content'],
+            }
+            for hit in hits
+        ] 
+        result = {
+            "total": int(data['hits']['total']['value']),
+            "result": refine
+        } 
+        return result
+    except:
+        return "No result"
 
 def elastic_search(query: str, page: int, sort:str) -> list:
     url = f"{os.getenv('ELASTIC_ENDPOINT')}/pdf_documents/_search/"
