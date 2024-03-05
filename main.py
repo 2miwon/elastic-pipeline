@@ -48,7 +48,7 @@ def keword(query: str):
 
 @app.get("/file/{bill_id}")
 def get_file(bill_id:int):
-        filepath = f'/{os.getenv("BILL_PDF_LOCATION")}/{int(bill_id)}.pdf'
+        filepath = f'{os.getenv("BILL_PDF_LOCATION")}/{int(bill_id)}.pdf'
         return FileResponse(filepath, filename=f'{bill_id}.pdf')
 
 @app.on_event('startup')
