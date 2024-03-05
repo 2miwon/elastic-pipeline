@@ -35,14 +35,12 @@ def health_check():
 
 class SearchRequest(BaseModel):
     query: str
-    page: int
-    sort: str
+    page: int = 1
+    sort: str = "RANK"
 
 @app.post("/search")
 def search(request: SearchRequest):
-    page = request.page or 1
-    sort = request.sort or "RANK"
-    return get_search(request.query, page, sort)
+    return get_search(request.query, request.page, request.sort)
 
 @app.get("/keword/{query}")
 def keword(query: str):
