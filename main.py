@@ -38,7 +38,7 @@ class SearchRequest(BaseModel):
     page: int
     sort: str
 
-@app.post("/search/")
+@app.post("/search")
 def search(request: SearchRequest):
     page = request.page or 1
     sort = request.sort or "RANK"
