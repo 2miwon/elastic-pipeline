@@ -5,19 +5,28 @@ from downstream.download import *
 from downstream.search import *
 from database import *
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 """
 fastAPI
 """
 
 app = FastAPI()
-# app.add_middleware(
-#     # CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+
+origins = [
+    "http://allaw.site",
+    "https://allaw.site",
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def health_check():
