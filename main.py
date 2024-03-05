@@ -48,7 +48,8 @@ def keword(query: str):
 
 @app.get("/file/{bill_id}")
 def get_file(bill_id:int):
-    return get_file(bill_id)
+        filepath = f'/data/bills/{int(bill_id)}.pdf'
+        return send_file(filepath, as_attachment=True)
 
 @app.on_event('startup')
 def init_data():
