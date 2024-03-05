@@ -1,6 +1,6 @@
 from typing import Union
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from downstream.download import *
 from downstream.search import *
 from database import *
@@ -49,7 +49,7 @@ def keword(query: str):
 @app.get("/file/{bill_id}")
 def get_file(bill_id:int):
         filepath = f'/data/bills/{int(bill_id)}.pdf'
-        return send_file(filepath, as_attachment=True)
+        return FileResponse(filepath, as_attachment=True, media_type='application/pdf')
 
 @app.on_event('startup')
 def init_data():
