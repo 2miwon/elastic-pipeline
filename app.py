@@ -37,7 +37,7 @@ def create_app():
 
     @app.get('/file/<bill_id>')
     def get_file(bill_id:int):
-        filepath = f'/data/bills/{int(bill_id)}.pdf'
+        filepath = f'{os.getenv("BILL_PDF_LOCATION")}/{int(bill_id)}.pdf'
         return send_file(filepath, as_attachment=True)
     
     return app
