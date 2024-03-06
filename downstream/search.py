@@ -23,7 +23,6 @@ def raw_search(query: str, page:int = 0, sort:str ="RANK", searchField:str = "AL
 
 def parse_search(data: dict):
     try:
-        print(data)
         hits = data['hits']['hits']
         refine = [
             {
