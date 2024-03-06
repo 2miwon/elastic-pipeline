@@ -48,8 +48,12 @@ def elastic_search(query: str, page: int, sort:str) -> list:
     headers = {
         "Content-Type": "application/json"
     }
-    from_ = (int(page) - 1) * 10 if int(page) > 0 else 0
+    # from_ = (int(page) - 1) * 10 if int(page) > 0 else 0
+    from_ = int(page) * 10 if int(page) > 0 else 0
     data = {
+        "_source": {
+            "excludes": ["content"]
+        },
         "query": {
             "match": {
                 "content": query
@@ -57,9 +61,14 @@ def elastic_search(query: str, page: int, sort:str) -> list:
         },
         "size": 10,
         "from": from_,
+        "sort": [{
+            "bill_no": {
+                "order": "desc"
+            }
+        }]
     }
     if sort == "DATE":
-        data["sort"] = [{"date": "desc"}]
+        data["sort"] = [{"date": {"order": "desc"}}]
     auth = (os.getenv("ELASTIC_ID"), os.getenv("ELASTIC_PASSWORD"))
 
     response = requests.post(url, headers=headers, json=data, auth=auth)
