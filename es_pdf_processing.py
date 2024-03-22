@@ -10,3 +10,7 @@ def extract_clean_text_from_pdf(file_path):
         text += page.get_text().replace("\n", "").replace("-", "").replace('\x0c', '').replace('  ', ' ')  # 텍스트 추출 후 정제
     doc.close()
     return text
+
+def debug_load_file(bill_no: int):
+    if exist_bill_metadata(bill_no):
+        doc = fitz.open(f"{os.getenv('BILL_PDF_LOCATION')}/{bill_no}.pdf")
